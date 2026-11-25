@@ -4,17 +4,19 @@
 
 Projeto do ML Challenge que classifica mensagens SMS em inglês como spam ou legítimas. A interface foi feita com Streamlit.
 
+O filtro pode ajudar quem recebe SMS a identificar ofertas suspeitas antes de abrir um link ou responder à mensagem.
+
 ## Dados
 
 Usei a [SMS Spam Collection](https://archive.ics.uci.edu/dataset/228/sms), de Tiago Almeida e José Hidalgo, disponibilizada pela UCI sob licença CC BY 4.0. A entrada do modelo é o texto da mensagem e o resultado previsto é `spam` ou `ham` (mensagem legítima).
 
-O arquivo bruto não deve ser enviado ao GitHub. Siga as instruções abaixo para obtê-lo na fonte oficial.
+O formato dos registros, a data de consulta e as instruções de download estão em [data/README.md](data/README.md).
 
 ## Como executar, passo a passo
 
 ### 1. Preparar o ambiente
 
-É necessário ter o Python instalado. Abra um terminal na pasta raiz do projeto e crie o ambiente virtual `.venv`:
+O projeto foi preparado com Python 3.14.4. No Linux ou macOS, abra um terminal na pasta raiz do projeto e execute:
 
 ```bash
 python3 -m venv .venv
@@ -22,13 +24,17 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-No Windows PowerShell, o comando de ativação é:
+No Windows PowerShell, use:
 
 ```powershell
-.venv\Scripts\Activate.ps1
+py -3.14 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
 Nas próximas vezes, basta ativar o ambiente e não é necessário recriá-lo.
+
+**Para experimentar o filtro**, siga diretamente para a etapa 4. O repositório já inclui o modelo treinado e suas métricas. As etapas 2 e 3 permitem reproduzir o treinamento.
 
 ### 2. Obter os dados
 
@@ -84,7 +90,11 @@ A primeira deve aparecer como provável mensagem legítima e a segunda como prov
 
 ![Quantidade de mensagens por classe](reports/graficos/quantidade_por_classe.png)
 
+*Figura 1. Há 4.827 mensagens legítimas e 747 spams. Um filtro que aceitasse todas as mensagens acertaria a maioria dos casos, mas deixaria passar todos os spams.*
+
 ![Comprimento das mensagens por classe](reports/graficos/comprimento_por_classe.png)
+
+*Figura 2. A linha no meio de cada caixa indica a mediana. Os spams costumam ser mais longos, mas há mensagens legítimas muito compridas, representadas pelos pontos acima da caixa. Só o tamanho não basta para identificar spam.*
 
 ## Preparação e treinamento
 
@@ -94,12 +104,18 @@ Usei TF-IDF para transformar os textos em números. O vocabulário foi aprendido
 
 ## Resultados
 
-| Modelo | Precisão de spam | Recall de spam | F1 de spam |
-|---|---:|---:|---:|
-| Naive Bayes | 100,0% | 60,2% | 75,1% |
-| Regressão Logística | 96,8% | 71,9% | 82,5% |
+No conjunto de teste havia 904 mensagens legítimas e 128 spams. A precisão indica quantas previsões daquela classe estavam corretas. O recall indica quantas mensagens reais daquela classe o filtro encontrou. O F1 combina as duas medidas.
+
+| Modelo | Classe | Precisão | Recall | F1 |
+|---|---|---:|---:|---:|
+| Naive Bayes | Legítima | 94,7% | 100,0% | 97,3% |
+| Naive Bayes | Spam | 100,0% | 60,2% | 75,1% |
+| Regressão Logística | Legítima | 96,2% | 99,7% | 97,9% |
+| Regressão Logística | Spam | 96,8% | 71,9% | 82,5% |
 
 Escolhi a Regressão Logística porque obteve o maior F1 para a classe spam. Ela detectou 15 spams a mais que o Naive Bayes e marcou incorretamente 3 mensagens legítimas como spam.
+
+Em um filtro de caixa de entrada, esses 3 falsos positivos poderiam esconder mensagens importantes. Já os 36 falsos negativos deixariam mensagens indesejadas chegar ao usuário.
 
 As métricas completas e as matrizes de confusão estão em [`reports/metricas.json`](reports/metricas.json). A aplicação carrega o modelo salvo em `models/model.joblib`.
 

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
@@ -102,9 +102,21 @@ for nome, modelo in modelos.items():
     modelo.fit(X_treino, y_treino)
     previsoes = modelo.predict(X_teste)
 
-    precisao, recall, f1, _ = precision_recall_fscore_support(
-        y_teste, previsoes, average="binary", pos_label="spam", zero_division=0
+    avaliacao = classification_report(
+        y_teste, previsoes, labels=["ham", "spam"], output_dict=True, zero_division=0
     )
+    por_classe = {
+        classe: {
+            "precisao": avaliacao[classe]["precision"],
+            "recall": avaliacao[classe]["recall"],
+            "f1": avaliacao[classe]["f1-score"],
+            "quantidade": int(avaliacao[classe]["support"]),
+        }
+        for classe in ("ham", "spam")
+    }
+    precisao = por_classe["spam"]["precisao"]
+    recall = por_classe["spam"]["recall"]
+    f1 = por_classe["spam"]["f1"]
     matriz = confusion_matrix(y_teste, previsoes, labels=["ham", "spam"])
 
     resultados[nome] = {
@@ -112,6 +124,7 @@ for nome, modelo in modelos.items():
         "recall": float(recall),
         "f1": float(f1),
         "matriz_confusao": matriz.tolist(),
+        "por_classe": por_classe,
     }
 
     print(f"\n{nome}")

@@ -6,6 +6,7 @@ __pycache__/
 # Base bruta: deve ser obtida na UCI seguindo o README
 data/*
 !data/.gitkeep
+!data/README.md
 
 # Arquivos compactados baixados
 *.zip
