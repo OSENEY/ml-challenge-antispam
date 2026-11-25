@@ -1,0 +1,40 @@
+{
+  "modelo_escolhido": "Regressão Logística",
+  "criterio": "Maior F1 para a classe spam",
+  "ordem_classes_na_matriz": [
+    "ham",
+    "spam"
+  ],
+  "resultados": {
+    "Naive Bayes": {
+      "precisao": 1.0,
+      "recall": 0.6015625,
+      "f1": 0.751219512195122,
+      "matriz_confusao": [
+        [
+          904,
+          0
+        ],
+        [
+          51,
+          77
+        ]
+      ]
+    },
+    "Regressão Logística": {
+      "precisao": 0.968421052631579,
+      "recall": 0.71875,
+      "f1": 0.8251121076233184,
+      "matriz_confusao": [
+        [
+          901,
+          3
+        ],
+        [
+          36,
+          92
+        ]
+      ]
+    }
+  }
+}

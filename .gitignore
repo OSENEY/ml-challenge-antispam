@@ -1,0 +1,16 @@
+# Ambiente virtual e arquivos temporários do Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Base bruta: deve ser obtida na UCI seguindo o README
+data/*
+!data/.gitkeep
+
+# Arquivos compactados baixados
+*.zip
+
+# Arquivos locais do Streamlit e do sistema operacional
+.streamlit/
+.DS_Store
+Thumbs.db
